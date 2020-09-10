@@ -1,4 +1,5 @@
 import alsaaudio, subprocess, logging, sys, time
+from sixsixutil import amixer
 from collections import namedtuple
 
 logging.root.setLevel(logging.NOTSET)
@@ -26,8 +27,9 @@ class SixAiSix:
     def __init__(self):
         self.id = get_card_id()
         self.controls = alsaaudio.mixers(self.id)
+        self.amixer = amixer.Amixer(self.id)
 
-    def wiggle(self, schlafen=0):
+    def wiggle(self, schlafen=0, use_amixer=True):
         for c in self.controls:
             if c in ["Extension Unit", "Sample Clock Sync Status"]:
                 continue
@@ -49,7 +51,7 @@ class SixAiSix:
                 mixer.setenum(temp_sel_index)
                 time.sleep(schlafen)
                 mixer.setenum(current_sel_index)
-            else:
+            elif not use_amixer:
                 current_sel = mixer.getvolume()[0]
 
                 if current_sel > 0:
@@ -62,3 +64,21 @@ class SixAiSix:
                 mixer.setvolume(temp_sel)
                 time.sleep(schlafen)
                 mixer.setvolume(current_sel)
+            elif use_amixer:
+                amixer_name = f"{c} Playback Volume"
+                current_sel = self.amixer.cget(amixer_name).vol
+                if len(current_sel) == 1:
+                    current_sel.append(current_sel[0])
+                temp_sel = [el for el in current_sel]
+
+                for i in range(0, len(temp_sel)):
+                    if temp_sel[i] > 0:
+                        temp_sel[i] -= 1
+                    else:
+                        temp_sel[i] += 1
+
+                l.info(f"{c}: {current_sel} <-> {temp_sel}")
+
+                self.amixer.cset(amixer_name, temp_sel[0], temp_sel[1])
+                time.sleep(schlafen)
+                self.amixer.cset(amixer_name, current_sel[0], current_sel[1])
