@@ -1,4 +1,5 @@
 import alsaaudio, subprocess, logging, sys, time
+from collections import namedtuple
 
 logging.root.setLevel(logging.NOTSET)
 l = logging.getLogger(__name__)
@@ -20,17 +21,6 @@ def get_card_id():
             pass
 
     return card_id
-
-def amixer_cget(card_id, control):
-    cmd = f"amixer -c {id} -M cget iface=MIXER,name='{control}'"
-    s = subprocess.run(cmd, shell=True, capture_output=True)
-
-    if s.returncode != 0:
-        # Throw exception!!!
-        pass
-
-    spl = s.split("\n")
-
 
 class SixAiSix:
     def __init__(self):
