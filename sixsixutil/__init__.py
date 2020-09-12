@@ -2,12 +2,7 @@ import alsaaudio, subprocess, logging, sys, time
 from sixsixutil import amixer
 from collections import namedtuple
 
-logging.root.setLevel(logging.NOTSET)
 l = logging.getLogger(__name__)
-stream = logging.StreamHandler(sys.stdout)
-stream.setLevel(logging.DEBUG)
-l.addHandler(stream)
-l.info("Test")
 
 def get_card_id():
     cmd = 'aplay -l | grep "Scarlett 6i6" | cut -d " " -f 2 | tr -d ":"'
