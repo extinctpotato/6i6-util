@@ -24,6 +24,20 @@ class SixAiSix:
         self.controls = alsaaudio.mixers(self.id)
         self.amixer = amixer.Amixer(self.id)
 
+    def clk(self):
+        ctl = "Scarlett 6i6 USB-Sync Clock Source"
+        mixer = alsaaudio.Mixer(cardindex=self.id, control=ctl)
+
+        curr_state = mixer.getenum()
+        curr_state_id = curr_state[1].index(curr_state[0])
+
+        toggle_id = not bool(curr_state_id)
+
+        l.info(f"CLK: {curr_state[0]} -> {curr_state[1][toggle_id]}")
+
+        mixer.setenum(toggle_id)
+
+
     def wiggle(self, schlafen=0, use_amixer=True):
         for c in self.controls:
             if c in ["Extension Unit", "Sample Clock Sync Status"]:

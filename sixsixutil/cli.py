@@ -9,12 +9,18 @@ sixsix = SixAiSix()
 def wiggle_func(args):
     sixsix.wiggle()
 
+def clk_func(args):
+    sixsix.clk()
+
 def get_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
     wiggle = subparsers.add_parser("wiggle")
     wiggle.set_defaults(func=wiggle_func)
+
+    clk = subparsers.add_parser("clk")
+    clk.set_defaults(func=clk_func)
 
     return parser
 
